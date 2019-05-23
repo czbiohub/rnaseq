@@ -6,7 +6,7 @@ Amazon Web Services (AWS) are cloud-based compute systems, suitable for large-sc
 
 czbiohub/rnaseq is built with NextFlow, which has a number of AWS integrations built in. However, AWS is vast and almost infinitely configurable, and as such there are several different ways in which you can use it for your analyses. Which approach you use depends on your needs - the frequency with which you run the pipeline, the scale of data you need to analysis and your familiarity with running in the cloud.
 
-In this document, we describe the steps taken when running czbiohub/rnaseq on AWS hardware using three different methods. These have been written as a walk-through based on our experience at the time of writing. Note that we have used AWS based in Ireland (`eu-west-1`) and that the availability of different hardware can vary according to location.
+In this document, we describe the steps taken when running czbiohub/rnaseq on AWS hardware using three different methods. These have been written as a walk-through based on our experience at the time of writing. Note that we have used AWS based in Oregon (`us-west-2`) and that the availability of different hardware can vary according to location.
 
 Please note that the state of Nextflow AWS integration has progressed very quickly, and some of these instructions may be out of date.
 
