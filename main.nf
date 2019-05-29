@@ -499,12 +499,12 @@ process fastqc {
 
 
 /*
- * STEP 2 - Trim Galore!
+ * STEP 2 - Trim reads with fastp and run FASTQC on the output
  */
-process trim_galore {
-    label 'low_memory'
+process trim_with_fastp {
     tag "$name"
-    publishDir "${params.outdir}/trim_galore", mode: 'copy',
+    container 'quay.io/biocontainers/fastp:0.20.0--hdbcaa40_0'
+    publishDir "${params.outdir}/fastp", mode: 'copy',
         saveAs: {filename ->
             if (filename.indexOf("_fastqc") > 0) "FastQC/$filename"
             else if (filename.indexOf("trimming_report.txt") > 0) "logs/$filename"
@@ -514,28 +514,53 @@ process trim_galore {
         }
 
     input:
-    set val(name), file(reads) from raw_reads_trimgalore
-    file wherearemyfiles from ch_where_trim_galore.collect()
+    set val(name), file(reads) from raw_reads_fastp
+    file wherearemyfiles from ch_where_fastp.collect()
 
     output:
-    file "*fq.gz" into trimmed_reads
-    file "*trimming_report.txt" into trimgalore_results
-    file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
+    set val(name), file("*fq.gz") into trimmed_reads, trimmed_reads_salmon, trimmed_reads_fastqc
+    file "*_fastp.{html,json}" into fastp_results
     file "where_are_my_files.txt"
 
 
     script:
-    c_r1 = clip_r1 > 0 ? "--clip_r1 ${clip_r1}" : ''
-    c_r2 = clip_r2 > 0 ? "--clip_r2 ${clip_r2}" : ''
-    tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${three_prime_clip_r1}" : ''
-    tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${three_prime_clip_r2}" : ''
+    // How much to trim from 5' end
+    five_prime_clip_r1_flag = five_prime_clip_r1 > 0 ? "--trim_front1 ${clip_r1}" : ''
+    five_prime_clip_r2_flag = five_prime_clip_r2 > 0 ? "--trim_front2 ${clip_r2}" : ''
+    // How much to trim from 3' end
+    three_prime_clip_r1_flag = three_prime_clip_r1 > 0 ? "--trim_tail1 ${three_prime_clip_r1}" : ''
+    three_prime_clip_r2_flag = three_prime_clip_r2 > 0 ? "--trim_tail2 ${three_prime_clip_r2}" : ''
+
+    // Separate Read1 and Read2
+    read1 = reads[0]
+    read2 = reads[1]
     if (params.singleEnd) {
         """
-        trim_galore --fastqc --gzip $c_r1 $tpc_r1 $reads
+        fastp \
+          --thread ${task.cpus} \
+          $five_prime_clip_r1_flag \
+          $three_prime_clip_r1_flag \
+          --in1 $read1 \
+          --overrepresentation_analysis \
+          --out1 ${name}_fastp_trimmed_R1.fq.gz \
+          --html ${name}_fastp.html \
+          --json ${name}_fastp.json
         """
     } else {
         """
-        trim_galore --paired --fastqc --gzip $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+        fastp \
+          --thread ${task.cpus} \
+          $five_prime_clip_r1_flag \
+          $five_prime_clip_r2_flag \
+          $three_prime_clip_r1_flag \
+          $three_prime_clip_r2_flag \
+          --in1 $read1 \
+          --in2 $read2 \
+          --overrepresentation_analysis \
+          --out1 ${name}_fastp_trimmed_R1.fq.gz \
+          --out2 ${name}_fastp_trimmed_R2.fq.gz \
+          --html ${name}_fastp.html \
+          --json ${name}_fastp.json
         """
     }
 }
