@@ -1091,6 +1091,7 @@ if (params.transcriptome){
         output:
         file "${sample}/${sample}.quant.ids-only.txt" into salmon_transcript_quant
         file "${sample}/${sample}.quant.genes.ids-only.txt" into salmon_gene_quant
+        file "${sample}" into salmon_logs
 
         script:
         def strandedness = params.unstranded ? 'U' : 'SR'
@@ -1293,6 +1294,7 @@ process multiqc {
     file ('trimgalore/*') from trimgalore_results.collect()
     file ('alignment/*') from alignment_logs.collect()
     file ('rseqc/*') from rseqc_results.collect().ifEmpty([])
+    file ('salmon/*') from salmon_logs.collect().ifEmpty([])
     file ('rseqc/*') from genebody_coverage_results.collect().ifEmpty([])
     file ('qualimap/*') from qualimap_results.collect().ifEmpty([])
     file ('preseq/*') from preseq_results.collect().ifEmpty([])
@@ -1314,7 +1316,9 @@ process multiqc {
     rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
     """
     multiqc . -f $rtitle $rfilename --config $multiqc_config \\
-        -m custom_content -m picard -m preseq -m rseqc -m featureCounts -m hisat2 -m star -m cutadapt -m fastqc -m qualimap -m salmon
+        -m custom_content -m picard -m preseq -m rseqc \\
+        -m featureCounts -m hisat2 -m star -m cutadapt \\
+        -m fastqc -m qualimap -m salmon
     """
 }
 
