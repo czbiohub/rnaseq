@@ -397,7 +397,7 @@ if(params.gff){
 
         output:
         file "${gff.baseName}.gtf" into gtf_makeSTARindex, gtf_makeHisatSplicesites, gtf_makeHISATindex, gtf_makeSalmonIndex, gtf_makeBED12,
-                                        gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge
+                                        gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge, gtf_qualimap
 
         script:
         """
@@ -747,7 +747,7 @@ if(params.aligner == 'hisat2'){
         script:
         index_base = hs2_indices[0].toString() - ~/.\d.ht2l?/
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
-        seqCenter = params.seqCenter ? "--rg-id ${prefix} --rg CN:${params.seqCenter.replaceAll('\\s','_')} SM:$prefix" : "--rg-id ${prefix} --rg SM:$prefix"        
+        seqCenter = params.seqCenter ? "--rg-id ${prefix} --rg CN:${params.seqCenter.replaceAll('\\s','_')} SM:$prefix" : "--rg-id ${prefix} --rg SM:$prefix"
         def rnastrandness = ''
         if (forwardStranded && !unStranded){
             rnastrandness = params.singleEnd ? '--rna-strandness F' : '--rna-strandness FR'
