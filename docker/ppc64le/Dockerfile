@@ -35,5 +35,5 @@ RUN chmod ugo+x csvtk-ppc64le && \
 
 RUN conda install --yes pandas
 
-RUN conda install --yes -c biobuilds samtools
-RUN apt-get -y upgrade && apt-get -y install r-base r-base-dev
+RUN conda install --yes -c biobuilds samtools trimmomatic STAR R Bioconductor
+#RUN apt-get -y upgrade && apt-get -y install r-base r-base-dev
