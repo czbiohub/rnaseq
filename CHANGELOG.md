@@ -32,7 +32,7 @@
 * Add `--skipAlignment` option to only use pseudo-alignment and no alignment with STAR or HiSat2
 * Check that gtf features are on chromosomes that exist in the genome fasta file [#274](https://github.com/nf-core/rnaseq/pull/274)
 * Maintain all gff features upon gtf conversion (keeps gene_biotype)
-
+* Add `--compressedReference` option to use gzipped genome fasta and gene annotation files, and tar.gz'd STAR, HiSat2 and Salmon indices
 
 ### Dependency Updates
 

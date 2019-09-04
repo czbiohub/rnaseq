@@ -2,6 +2,8 @@ sudo: required
 language: python
 services: docker
 cache: pip
+jdk: openjdk8
+
 matrix:
   fast_finish: true
   include:
@@ -10,13 +12,13 @@ matrix:
     jdk: openjdk8
   - name: "Latest Nextflow version, regular test suite"
     env: NXF_VER='' SUITE=test_gz
-    jdk: openjdk8
   - name: "Latest Nextflow version, gzipped references"
     env: NXF_VER='' SUITE=test_gz
-    jdk: openjdk8
   - name: "Lint the pipeline code"
     script: nf-core lint ${TRAVIS_BUILD_DIR}
     python: '3.6'
+    env: NXF_VER='0.32.0'
+    jdk: openjdk8
   - name: "Lint the documentation"
     script: markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
     python: '3.6'
@@ -44,17 +46,14 @@ install:
   - sudo apt-get install npm && npm install -g markdownlint-cli
 
 script:
-  # Lint the pipeline code
-  - nf-core lint ${TRAVIS_BUILD_DIR}
-  # Lint the documentation
-  - markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
   # Run with STAR
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker
   # Run with HISAT2
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --aligner hisat2
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --aligner hisat2
   # Run with STAR and Salmon
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --pseudo_aligner salmon
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --pseudo_aligner salmon
   # Run with Salmon and no alignment
+<<<<<<< HEAD
   - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --pseudo_aligner salmon --skipAlignment
   # Test that making the transcript fasta from scratch works
   - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --pseudo_aligner salmon --transcript_fasta false
@@ -62,5 +61,8 @@ script:
   - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --pseudo_aligner salmon --additional_fasta false
   # Test gff -> gtf conversion
   - nextflow run ${TRAVIS_BUILD_DIR} -profile $SUITE,docker --gff false
+=======
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --pseudo_aligner salmon --skipAlignment
+>>>>>>> olgabot/gzipped-reference
   # Additional gzipped-only things that are only invoked if $SUITE=test_gz
   - ./test-gzipped-star-hisat2-indices.sh
