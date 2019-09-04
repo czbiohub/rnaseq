@@ -52,6 +52,8 @@ script:
   - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --aligner hisat2
   # Run with STAR and Salmon
   - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --pseudo_aligner salmon
+  # Run with STAR and Salmon + build transcriptome from genome fasta + gtf
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --pseudo_aligner salmon --transcript_fasta false
   # Run with Salmon and no alignment
   - nextflow run ${TRAVIS_BUILD_DIR} -profile ${SUITE},docker --pseudo_aligner salmon --skipAlignment
   # Additional gzipped-only things that are only invoked if $SUITE=test_gz
