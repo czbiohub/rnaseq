@@ -555,6 +555,23 @@ if (params.compressedReference){
         """
         gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
+      }
+    } else {
+      process gunzip_gtf {
+          tag "$gz"
+          publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
+                     saveAs: { params.saveReference ? it : null }, mode: 'copy'
+
+          input:
+          file gz from gtf_gz
+
+          output:
+          file "${gz.baseName}" into gtf_makeSTARindex, gtf_makeHisatSplicesites, gtf_makeHISATindex, gtf_makeSalmonIndex, gtf_makeBED12, gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge, gtf_qualimap
+
+        script:
+        """
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
+        """
     }
     // --- end if gtf ---
   }
