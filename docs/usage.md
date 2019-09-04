@@ -26,6 +26,7 @@
   * [`--saveTrimmed`](#--savetrimmed)
   * [`--saveAlignedIntermediates`](#--savealignedintermediates)
   * [`--gencode`](#--gencode)
+  * [`--additional_fasta`](#--additional_fasta)
   * [`--skipAlignment`](#--skipAlignment)
 * [Adapter Trimming](#adapter-trimming)
   * [`--clip_r1 [int]`](#--clip_r1-int)
@@ -279,6 +280,9 @@ If your `--gtf` file is in GENCODE format and you would like to run Salmon (`--p
 
 [GENCODE](gencodegenes.org/) gene annotations are slightly different from ENSEMBL or iGenome annotations in two ways.
 
+### `--additional_fasta`
+If provided, any genes here will get concatenated to the existing genome fasta, a GTF will be automatically created using the entire sequence as the `gene`, `transcript`, and `exon` features, and the alignment index will get created off of the combined fasta and GTF. It is recommended to save the reference with `--saveReference` so you do not need to create it again.
+
 ### `--skipAlignment`
 By default, the pipeline aligns the input reads to the genome using either HISAT2 or STAR and counts gene expression using featureCounts. If you prefer to skip alignment altogehter and only get transcript/gene expression counts with pseudoalignment, use this flag. Note that you will also need to specify `--psuedo_aligner salmon`. If you have a custom transcriptome, supply that with `--transcript_fasta`.
 
@@ -320,7 +324,6 @@ GENCODE version:
 ```
 
 This [issue](https://github.com/COMBINE-lab/salmon/issues/15) can be overcome by specifying the `--gencode` flag when building the Salmon index.
-
 
 ## Adapter Trimming
 If specific additional trimming is required (for example, from additional tags),

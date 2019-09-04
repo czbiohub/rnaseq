@@ -28,6 +28,7 @@
 * Get MultiQC to write out the software versions in a .csv file [#185](https://github.com/nf-core/rnaseq/issues/185)
 * Add `--gencode` option for compatibility of Salmon and featureCounts biotypes with GENCODE gene annotations
 * Use `file` instead of `new File` to create `pipeline_report.{html,txt}` files, and properly create subfolders
+* Add option for `--additional_fasta` to provide ERCC spike-ins, transgenes such as GFP or CAR-T as additional sequences to align to
 * Add `--skipAlignment` option to only use pseudo-alignment and no alignment with STAR or HiSat2
 
 ### Dependency Updates
@@ -45,6 +46,7 @@
 * Added RSEM 1.3.2
 * Added tximport 1.0.3
 * Added SummarizedExperiment 1.12.0
+
 
 ## [Version 1.3](https://github.com/nf-core/rnaseq/releases/tag/1.3) - 2019-03-26
 
