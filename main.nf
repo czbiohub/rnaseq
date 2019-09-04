@@ -515,7 +515,7 @@ if (params.compressedReference){
 
           script:
           """
-          gunzip -v --force ${gz} > ${gz.baseName}
+          gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
           """
       }
     } else {
@@ -532,7 +532,7 @@ if (params.compressedReference){
 
           script:
           """
-          gunzip -v --force ${gz} > ${gz.baseName}
+          gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
           """
       }
     }
@@ -551,29 +551,10 @@ if (params.compressedReference){
           output:
           file "${gz.baseName}" into ch_genome_gtf
 
-          script:
-          """
-          gunzip -v --force ${gz} > ${gz.baseName}
-          """
-      }
-    } else {
-      process gunzip_gtf {
-          tag "$gz"
-          publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
-                     saveAs: { params.saveReference ? it : null }, mode: 'copy'
-
-          input:
-          file gz from gtf_gz
-
-          output:
-          file "${gz.baseName}" into gtf_makeSTARindex, gtf_makeHisatSplicesites, gtf_makeHISATindex, gtf_makeSalmonIndex, gtf_makeBED12,
-                                          gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge, gtf_qualimap
-
-          script:
-          """
-          gunzip -v --force ${gz} > ${gz.baseName}
-          """
-      }
+        script:
+        """
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
+        """
     }
     // --- end if gtf ---
   }
@@ -591,7 +572,7 @@ if (params.compressedReference){
 
         script:
         """
-        gunzip -v --force ${gz} > ${gz.baseName}
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
     }
   }
@@ -609,7 +590,7 @@ if (params.compressedReference){
 
         script:
         """
-        gunzip -v --force ${gz} > ${gz.baseName}
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
     }
   }
@@ -627,7 +608,7 @@ if (params.compressedReference){
 
         script:
         """
-        gunzip -v --force ${gz} > ${gz.baseName}
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
     }
   }
@@ -645,7 +626,7 @@ if (params.compressedReference){
 
         script:
         """
-        gunzip -v --force ${gz} > ${gz.baseName}
+        gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
     }
   }
