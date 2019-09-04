@@ -573,6 +573,7 @@ if (params.compressedReference){
         gunzip --verbose --stdout --force ${gz} > ${gz.baseName}
         """
     }
+  }
     // --- end if gtf ---
   }
   if (params.gff){
