@@ -184,6 +184,8 @@ else if ( params.fasta && !params.skipAlignment){
           .ifEmpty { exit 1, "Genome fasta file not found: ${params.fasta}" }
     } else {
       // Compressed reference, no additional fasta
+      genome_fasta_gz = Channel.fromPath(params.fasta, checkIfExists: true)
+          .ifEmpty { exit 1, "Genome fasta file not found: ${params.fasta}" }
     }
   } else {
     if (params.additional_fasta){
@@ -534,6 +536,7 @@ if (params.compressedReference){
           """
       }
     }
+    // --- End unzipping genome fasta with or without additional fasta ---
   }
   if (params.gtf){
     if (params.additional_fasta){
@@ -572,6 +575,7 @@ if (params.compressedReference){
           """
       }
     }
+    // --- end if gtf ---
   }
   if (params.gff){
     process gunzip_gff {
