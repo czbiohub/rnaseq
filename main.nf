@@ -707,6 +707,7 @@ if (params.compressedReference){
     }
   }
 }
+
 if ( params.additional_fasta ){
   process make_additional_gtf {
     publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
