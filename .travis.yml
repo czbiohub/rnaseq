@@ -57,6 +57,8 @@ script:
   # Run with Salmon + pre-build gzipped indices
   - nextflow run ${TRAVIS_BUILD_DIR} -profile test_gz,docker --pseudo_aligner salmon
   # Test that making the transcript fasta from scratch works
-  - nextflow run -profile test,docker . --pseudo_aligner salmon --transcript_fasta false
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --pseudo_aligner salmon --transcript_fasta false
   # Test that it works without specifying additional fasta
-  - nextflow run -profile test,docker . --pseudo_aligner salmon --additional_fasta false
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --pseudo_aligner salmon --additional_fasta false
+  # Test gff -> gtf conversion
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --gff false
