@@ -270,21 +270,27 @@ if ( params.pseudo_aligner == 'salmon' ) {
 
 if( params.gtf ){
   if (params.compressedReference){
-    gtf_gz = Channel
-        .fromPath(params.gtf, checkIfExists: true)
-        .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
-  if ( params.additional_fasta ){
-    Channel
-        .fromPath(params.gtf)
-        .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
-        .set { ch_genome_gtf }
+    if ( params.additional_fasta ){
+      ch_genome_gtf_gz = Channel
+          .fromPath(params.gtf)
+          .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
+    } else {
+      gtf_gz = Channel
+          .fromPath(params.gtf, checkIfExists: true)
+          .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
+    }
   } else {
-    Channel
-        .fromPath(params.gtf, checkIfExists: true)
-        .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
-        .into { gtf_makeSTARindex; gtf_makeHisatSplicesites; gtf_makeHISATindex; gtf_makeSalmonIndex; gtf_makeBED12;
-                gtf_star; gtf_dupradar; gtf_qualimap;  gtf_featureCounts; gtf_stringtieFPKM; gtf_salmon; gtf_salmon_merge }
-
+    if (params.additional_fasta){
+      ch_genome_gtf = Channel
+          .fromPath(params.gtf)
+          .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
+    } else {
+      Channel
+          .fromPath(params.gtf, checkIfExists: true)
+          .ifEmpty { exit 1, "GTF annotation file not found: ${params.gtf}" }
+          .into { gtf_makeSTARindex; gtf_makeHisatSplicesites; gtf_makeHISATindex; gtf_makeSalmonIndex; gtf_makeBED12;
+                  gtf_star; gtf_dupradar; gtf_qualimap;  gtf_featureCounts; gtf_stringtieFPKM; gtf_salmon; gtf_salmon_merge }
+    }
   }
 } else if ( params.gff ){
   if (params.compressedReference){
@@ -295,8 +301,7 @@ if( params.gtf ){
     gffFile = Channel.fromPath(params.gff, checkIfExists: true)
                   .ifEmpty { exit 1, "GFF annotation file not found: ${params.gff}" }
     }
-  }
-} else {
+  } else {
     exit 1, "No GTF or GFF3 annotation specified!"
 }
 
@@ -531,22 +536,41 @@ if (params.compressedReference){
     }
   }
   if (params.gtf){
-    process gunzip_gtf {
-        tag "$gz"
-        publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
-                   saveAs: { params.saveReference ? it : null }, mode: 'copy'
+    if (params.additional_fasta){
+      process gunzip_gtf_with_additional_fasta {
+          tag "$gz"
+          publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
+                     saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
-        input:
-        file gz from gtf_gz
+          input:
+          file gz from ch_genome_gtf_gz
 
-        output:
-        file "${gz.baseName}" into gtf_makeSTARindex, gtf_makeHisatSplicesites, gtf_makeHISATindex, gtf_makeSalmonIndex, gtf_makeBED12,
-                                        gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge, gtf_qualimap
+          output:
+          file "${gz.baseName}" into ch_genome_gtf
 
-        script:
-        """
-        gunzip -v --force ${gz} > ${gz.baseName}
-        """
+          script:
+          """
+          gunzip -v --force ${gz} > ${gz.baseName}
+          """
+      }
+    } else {
+      process gunzip_gtf {
+          tag "$gz"
+          publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
+                     saveAs: { params.saveReference ? it : null }, mode: 'copy'
+
+          input:
+          file gz from gtf_gz
+
+          output:
+          file "${gz.baseName}" into gtf_makeSTARindex, gtf_makeHisatSplicesites, gtf_makeHISATindex, gtf_makeSalmonIndex, gtf_makeBED12,
+                                          gtf_star, gtf_dupradar, gtf_featureCounts, gtf_stringtieFPKM, gtf_salmon, gtf_salmon_merge, gtf_qualimap
+
+          script:
+          """
+          gunzip -v --force ${gz} > ${gz.baseName}
+          """
+      }
     }
   }
   if (params.gff){
